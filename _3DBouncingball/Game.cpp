@@ -45,8 +45,6 @@ void Game::run(int argc, char **argv)
     glutSpecialFunc(special);
     glutIdleFunc(idle);
     glutMainLoop();
-    
-    singleton->reset();
 }
 
 void Game::initMatrices()
@@ -116,7 +114,8 @@ void Game::display()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     V = LookAt(vec4(eyeX,eyeY,eyeZ,0), vec4(centerX,centerY,centerZ,0), vec4(0,1,0,0));
     glUniformMatrix4fv(singleton->viewMatrixID, 1, GL_TRUE, V);
-    
+    singleton->reset();
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, TotalNumberOfWallVertices);
     glutSwapBuffers();
 }
