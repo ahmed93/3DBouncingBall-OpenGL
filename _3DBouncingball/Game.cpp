@@ -133,31 +133,21 @@ void Game::display()
     rotYMatrix = RotateY(0.0);
     transMatrix = Translate(0.0f, 0.0f, 0.0f);
     
-//    M = transMatrix * scaleMatrix * rotYMatrix;
-    
     // passing the Matrices IDs to the shaders .... 1 -> Number of Matrices
-//    glUniformMatrix4fv(modelMatrixID, 1, GL_TRUE, M);
     glUniformMatrix4fv(viewMatrixID, 1, GL_TRUE, V);
     glUniformMatrix4fv(perspectiveMatrixID, 1, GL_TRUE, P);
-//    
-//    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-//    glDrawArrays(GL_TRIANGLES, 0, 36);
 
     for (float z = 0.0; z < 100; z ++) {
-        for (float i = -4.0; i < 3.0; i++) {
+        for (float i = -4.0; i < 4.0; i++) {
             singleton->setColorArray(rand() % kNumOfColors);
-            
             transMatrix = Translate(i, -4.0f, z*-1);
-            
             M = transMatrix * scaleMatrix * rotYMatrix;
-            
             // passing the Matrices IDs to the shaders .... 1 -> Number of Matrices
+
             glUniformMatrix4fv(modelMatrixID, 1, GL_TRUE, M);
-            
             glBufferSubData(GL_ARRAY_BUFFER, 0, 36*sizeof(vec3), vertices);
             glBufferSubData(GL_ARRAY_BUFFER, 36*sizeof(vec3), 36*sizeof(vec4), colors);
 
-            
             glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
             glDrawArrays(GL_TRIANGLES, 0, 36);
             
@@ -165,7 +155,7 @@ void Game::display()
     }
 
     for (float z = 0.0; z < 100; z ++) {
-        for (float i = -4.0; i < 3.0; i++) {
+        for (float i = -4.0; i < 4.0; i++) {
             singleton->setColorArray(rand() % kNumOfColors);
             
             transMatrix = Translate(i, 3.0f, z*-1);
