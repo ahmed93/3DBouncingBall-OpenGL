@@ -77,7 +77,7 @@ int Room::setScore(int colorID)
 
 void Room::writeBuffer()
 {
-//    drawWall(1,true);
+    drawWall(1,true);
 //    drawWall(2,false);
 //    drawWall(3,false);
 //    drawWall(4,false);
@@ -87,7 +87,7 @@ void Room::writeBuffer()
 void Room::drawWall(int wallT,bool frontWall)
 {
     int depth = frontWall?8:100;
-    int width = 3;
+    int width = 4;
     vec4 colors[36];
     int colorId = 0;
     for (int i = 0; i < depth; i++) {

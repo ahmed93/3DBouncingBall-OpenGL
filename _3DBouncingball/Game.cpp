@@ -45,6 +45,8 @@ void Game::run(int argc, char **argv)
     glutSpecialFunc(special);
     glutIdleFunc(idle);
     glutMainLoop();
+    
+    singleton->reset();
 }
 
 void Game::initMatrices()
@@ -84,7 +86,7 @@ void Game::init()
     GLuint vboID;
     glGenBuffers(1, &vboID);
     glBindBuffer(GL_ARRAY_BUFFER, vboID);
-    glBufferData(GL_ARRAY_BUFFER, WALL_OFFSET, NULL, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, WALL_TOTAL_OFFSET, NULL, GL_STATIC_DRAW);
     
     GLuint vPosition = glGetAttribLocation(program, "vPosition");
     GLuint vColor = glGetAttribLocation(program, "vColor");
@@ -94,7 +96,7 @@ void Game::init()
     modelMatrixID = glGetUniformLocation(program, "mM");
 
     glVertexAttribPointer(vPosition, 3, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0));
-    glVertexAttribPointer(vColor, 4, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(sizeof(vertices)));
+    glVertexAttribPointer(vColor, 4, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(VWALL_OFFSET));
     glEnableVertexAttribArray(vPosition);
     glEnableVertexAttribArray(vColor);
     glClearColor(1.0, 1.0, 1.0, 1.0);
@@ -114,9 +116,8 @@ void Game::display()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     V = LookAt(vec4(eyeX,eyeY,eyeZ,0), vec4(centerX,centerY,centerZ,0), vec4(0,1,0,0));
     glUniformMatrix4fv(singleton->viewMatrixID, 1, GL_TRUE, V);
-    singleton->reset();
     
-//    glDrawArrays(GL_TRIANGLE_STRIP, 0, TotalNumberOfWallVertices);
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, TotalNumberOfWallVertices);
     glutSwapBuffers();
 }
 

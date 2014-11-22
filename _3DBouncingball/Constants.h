@@ -33,7 +33,7 @@ const int FRONT_WALL_VERTICES = WALL_WIDTH * WALL_WIDTH * 36;
 const int TotalNumberOfWallVertices = RIGHT_WALL_VERTICES + LEFT_WALL_VERTICES + TOP_WALL_VERTICES + BOTTOM_WALL_VERTICES + FRONT_WALL_VERTICES;
 const int TotalNumberOfWallVerticesColors = TotalNumberOfWallVertices;
 
-const int WALL_OFFSET = 36*sizeof(vec3) + 36*sizeof(vec4);
+const int WALL_TOTAL_OFFSET = TotalNumberOfWallVertices*sizeof(vec3) + TotalNumberOfWallVerticesColors*sizeof(vec4);
 const int VWALL_OFFSET = TotalNumberOfWallVertices*sizeof(vec3);
 
 //const int BeginPoints;
