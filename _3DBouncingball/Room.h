@@ -10,16 +10,26 @@
 #define ___3DBouncingball__Room__
 
 #include "Constants.h"
-
+#include "Game.h"
 
 class Room {
 private:
-
-public:
-    static vec3 points[22];
-    static vec4 colors[33];
+    vec2 FRONT_WALL_SCORE[8][8];
+    vec2 BOTTOM_WALL_SCORE[8][100];
+    vec2 TOP_WALL_SCORE[8][100];
+    vec2 RIGHT_WALL_SCORE[8][100];
+    vec2 LEFT_WALL_SCORE[8][100];
+    
+protected:
+    void drawWall(mat4);
+    void drawWall(int wallT,bool frontWall);
+    int setScore(int colorID);
+    
+public:    
+    Room();
     void init();
-
+    void reset();
+    void writeBuffer();
 };
 
 

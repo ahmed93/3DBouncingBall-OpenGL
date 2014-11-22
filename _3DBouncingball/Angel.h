@@ -67,6 +67,8 @@ const GLfloat  DegreesToRadians = M_PI / 180.0;
 
 #define Print(x)  do { std::cerr << #x " = " << (x) << std::endl; } while(0)
 
+#define PrintC(x) { std::cout << #x " = " << (x) << std::endl; } 
+
 //  Globally use our namespace in our example programs.
 using namespace Angel;
 

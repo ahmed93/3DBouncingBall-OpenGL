@@ -11,18 +11,13 @@
 
 #include "Constants.h"
 #include "Room.h"
-#include "Ball.h"
-#include "Cube.h"
 
-class Cube;
+class Room;
 
 class Game {
-
 private:
     bool is_game_over;
-    Ball ball;
-    Room room;
-    Cube* cube;
+    Room *room;
     
 protected:
     void init();
@@ -36,10 +31,15 @@ protected:
     void setColorArray(GLuint id);
     
 public:
-    static Game *singleton;
     void game_over();
     void run(int argc, char **argv);
+    
+    static Game *singleton;
+    int currentStartPoint;
     GLuint getProgramID();
+    GLuint perspectiveMatrixID;
+    GLuint viewMatrixID;
+    GLuint modelMatrixID;
 };
 
 #endif /* defined(___3DBouncingball__Game__) */

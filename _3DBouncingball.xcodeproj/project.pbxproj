@@ -7,9 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		A70259E51A1810870082689B /* Camera.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A70259E31A1810870082689B /* Camera.cpp */; };
 		A70259EB1A188A540082689B /* InitShader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A70259EA1A188A540082689B /* InitShader.cpp */; };
-		A76613181A1DE31400B2EF78 /* Cube.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A76613161A1DE31400B2EF78 /* Cube.cpp */; };
 		A79188261A1B8BB1002CE0DD /* vshader.glsl in Copy Files (2 items) */ = {isa = PBXBuildFile; fileRef = A79188241A1B8AB4002CE0DD /* vshader.glsl */; };
 		A79188271A1B8BB1002CE0DD /* fshader.glsl in Copy Files (2 items) */ = {isa = PBXBuildFile; fileRef = A79188251A1B8AB4002CE0DD /* fshader.glsl */; };
 		A791882A1A1B9BEC002CE0DD /* Room.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A79188281A1B9BEC002CE0DD /* Room.cpp */; };
@@ -17,7 +15,6 @@
 		A7EAE5141A17EADB00C70476 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7EAE5131A17EADB00C70476 /* OpenGL.framework */; };
 		A7EAE51F1A17ED0000C70476 /* BouncingBall.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7EAE51E1A17ED0000C70476 /* BouncingBall.cpp */; };
 		A7EAE5221A17ED3A00C70476 /* Game.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7EAE5201A17ED3A00C70476 /* Game.cpp */; };
-		A7EAE5251A17ED5D00C70476 /* Ball.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7EAE5231A17ED5D00C70476 /* Ball.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -36,14 +33,10 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		A70259E31A1810870082689B /* Camera.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Camera.cpp; sourceTree = "<group>"; };
-		A70259E41A1810870082689B /* Camera.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Camera.h; sourceTree = "<group>"; };
 		A70259E61A1812980082689B /* mat.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = mat.h; sourceTree = "<group>"; };
 		A70259E71A1812980082689B /* vec.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = vec.h; sourceTree = "<group>"; };
 		A70259E91A188A380082689B /* Angel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Angel.h; sourceTree = "<group>"; };
 		A70259EA1A188A540082689B /* InitShader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = InitShader.cpp; sourceTree = "<group>"; };
-		A76613161A1DE31400B2EF78 /* Cube.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Cube.cpp; sourceTree = "<group>"; };
-		A76613171A1DE31400B2EF78 /* Cube.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Cube.h; sourceTree = "<group>"; };
 		A79188241A1B8AB4002CE0DD /* vshader.glsl */ = {isa = PBXFileReference; explicitFileType = sourcecode.glsl; path = vshader.glsl; sourceTree = "<group>"; };
 		A79188251A1B8AB4002CE0DD /* fshader.glsl */ = {isa = PBXFileReference; explicitFileType = sourcecode.glsl; path = fshader.glsl; sourceTree = "<group>"; };
 		A79188281A1B9BEC002CE0DD /* Room.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Room.cpp; sourceTree = "<group>"; };
@@ -54,8 +47,6 @@
 		A7EAE51E1A17ED0000C70476 /* BouncingBall.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BouncingBall.cpp; sourceTree = "<group>"; };
 		A7EAE5201A17ED3A00C70476 /* Game.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Game.cpp; sourceTree = "<group>"; };
 		A7EAE5211A17ED3A00C70476 /* Game.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Game.h; sourceTree = "<group>"; };
-		A7EAE5231A17ED5D00C70476 /* Ball.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Ball.cpp; sourceTree = "<group>"; };
-		A7EAE5241A17ED5D00C70476 /* Ball.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Ball.h; sourceTree = "<group>"; };
 		A7EAE5291A17EDA200C70476 /* Constants.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Constants.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -107,14 +98,8 @@
 				A7EAE51E1A17ED0000C70476 /* BouncingBall.cpp */,
 				A7EAE5211A17ED3A00C70476 /* Game.h */,
 				A7EAE5201A17ED3A00C70476 /* Game.cpp */,
-				A7EAE5241A17ED5D00C70476 /* Ball.h */,
-				A7EAE5231A17ED5D00C70476 /* Ball.cpp */,
 				A79188291A1B9BEC002CE0DD /* Room.h */,
 				A79188281A1B9BEC002CE0DD /* Room.cpp */,
-				A70259E41A1810870082689B /* Camera.h */,
-				A70259E31A1810870082689B /* Camera.cpp */,
-				A76613171A1DE31400B2EF78 /* Cube.h */,
-				A76613161A1DE31400B2EF78 /* Cube.cpp */,
 			);
 			path = _3DBouncingball;
 			sourceTree = "<group>";
@@ -197,11 +182,8 @@
 			files = (
 				A791882A1A1B9BEC002CE0DD /* Room.cpp in Sources */,
 				A70259EB1A188A540082689B /* InitShader.cpp in Sources */,
-				A7EAE5251A17ED5D00C70476 /* Ball.cpp in Sources */,
-				A76613181A1DE31400B2EF78 /* Cube.cpp in Sources */,
 				A7EAE5221A17ED3A00C70476 /* Game.cpp in Sources */,
 				A7EAE51F1A17ED0000C70476 /* BouncingBall.cpp in Sources */,
-				A70259E51A1810870082689B /* Camera.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

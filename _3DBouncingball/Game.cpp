@@ -8,18 +8,16 @@
 
 #include "Angel.h"
 #include "Game.h"
-
+#include "Room.H"
 
 Game *Game::singleton = NULL;
 
-GLuint perspectiveMatrixID, viewMatrixID, modelMatrixID;
 double eyeX, eyeY, eyeZ, centerX, centerY, centerZ;
 
 mat4 rotXMatrix;
 mat4 rotYMatrix;
 mat4 rotZMatrix;
 mat4 transMatrix;
-mat4 scaleMatrix;
 mat4 tempMatrix;
 mat4 M;
 mat4 V;
@@ -30,23 +28,17 @@ GLfloat scaleAmount; //In case the object is too big or small
 using namespace std;
 void Game::run(int argc, char **argv)
 {
+    currentStartPoint = 0;
     singleton = this;
-    
-    timeval t;
-    gettimeofday(&t, NULL);
-    srand((unsigned)(t.tv_sec * 1000 + t.tv_usec));
-    cout << GL_TIME_ELAPSED << endl;
-    
+    singleton->room = new Room();
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_3_2_CORE_PROFILE | GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH);
-    glutInitWindowSize(WINDOWS_WIDTH, WINDOWS_HEIGHT);
+    glutInitWindowSize(WINDOW_WIDTH, WINDOW_HEIGHT);
     glutInitWindowPosition(100,50);
     glutCreateWindow("3D Bouncing Ball ...");
-    
     initMatrices();
     init();
     glEnable(GL_DEPTH_TEST);
-    // Accept fragment if it closer to the camera than the former one
     glDepthFunc(GL_LESS);
     glutDisplayFunc(display);
     glutKeyboardFunc(keyboard);
@@ -54,7 +46,6 @@ void Game::run(int argc, char **argv)
     glutIdleFunc(idle);
     glutMainLoop();
 }
-vec4 colors[36];
 
 void Game::initMatrices()
 {
@@ -65,12 +56,18 @@ void Game::initMatrices()
     rotYMatrix = identity();
     rotZMatrix = identity();
     transMatrix = identity();
-    scaleMatrix = identity();
     tempMatrix = identity();
     
     M = identity();
     V = identity();
     P = identity();
+    
+    eyeX = 0.3;
+    eyeY = 1;
+    eyeZ = 8;
+    centerX = 0.0;
+    centerY = 0;
+    centerZ = 0.0;
 }
 
 void Game::init()
@@ -87,10 +84,7 @@ void Game::init()
     GLuint vboID;
     glGenBuffers(1, &vboID);
     glBindBuffer(GL_ARRAY_BUFFER, vboID);
-    glBufferData(GL_ARRAY_BUFFER, 36*sizeof(vec3) + 36*sizeof(vec4), NULL, GL_STATIC_DRAW);
-    
-//    glBufferSubData(GL_ARRAY_BUFFER, 0, 36*sizeof(vec3), vertices);
-//    glBufferSubData(GL_ARRAY_BUFFER, 36*sizeof(vec3), 36*sizeof(vec4), colors);
+    glBufferData(GL_ARRAY_BUFFER, WALL_OFFSET, NULL, GL_STATIC_DRAW);
     
     GLuint vPosition = glGetAttribLocation(program, "vPosition");
     GLuint vColor = glGetAttribLocation(program, "vColor");
@@ -103,145 +97,27 @@ void Game::init()
     glVertexAttribPointer(vColor, 4, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(sizeof(vertices)));
     glEnableVertexAttribArray(vPosition);
     glEnableVertexAttribArray(vColor);
-
     glClearColor(1.0, 1.0, 1.0, 1.0);
-    P = Perspective(60.0f, 1.0f, 0.1f, 1000.0f);
-    eyeX = 0.3;
-    eyeY = 1;
-    eyeZ = 8;
-    centerX = 0.0;
-    centerY = 0;
-    centerZ = 0.0;
 }
 
-void Game::setColorArray(GLuint id)
+void Game::reset()
 {
-    for (int i = 0; i < 36; i++) {
-        colors[i] = kDefaultColors[id];
-    }
+    P = Perspective(60.0f, 1.0f, 0.1f, 1000.0f);
+    V = LookAt(vec4(eyeX,eyeY,eyeZ,0), vec4(centerX,centerY,centerZ,0), vec4(0,1,0,0));
+    glUniformMatrix4fv(singleton->viewMatrixID, 1, GL_TRUE, V);
+    glUniformMatrix4fv(singleton->perspectiveMatrixID, 1, GL_TRUE, P);
+    singleton->room->writeBuffer();
 }
-
-
-
 
 void Game::display()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     V = LookAt(vec4(eyeX,eyeY,eyeZ,0), vec4(centerX,centerY,centerZ,0), vec4(0,1,0,0));
-
-    scaleMatrix = Scale(0.5f, 0.5f, 0.5f);
-    rotYMatrix = RotateY(0.0);
-    transMatrix = Translate(0.0f, 0.0f, 0.0f);
+    glUniformMatrix4fv(singleton->viewMatrixID, 1, GL_TRUE, V);
+    singleton->reset();
     
-//    M = transMatrix * scaleMatrix * rotYMatrix;
-    
-    // passing the Matrices IDs to the shaders .... 1 -> Number of Matrices
-//    glUniformMatrix4fv(modelMatrixID, 1, GL_TRUE, M);
-    glUniformMatrix4fv(viewMatrixID, 1, GL_TRUE, V);
-    glUniformMatrix4fv(perspectiveMatrixID, 1, GL_TRUE, P);
-//    
-//    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-//    glDrawArrays(GL_TRIANGLES, 0, 36);
-
-    for (float z = 0.0; z < 100; z ++) {
-        for (float i = -4.0; i < 3.0; i++) {
-            singleton->setColorArray(rand() % kNumOfColors);
-            
-            transMatrix = Translate(i, -4.0f, z*-1);
-            
-            M = transMatrix * scaleMatrix * rotYMatrix;
-            
-            // passing the Matrices IDs to the shaders .... 1 -> Number of Matrices
-            glUniformMatrix4fv(modelMatrixID, 1, GL_TRUE, M);
-            
-            glBufferSubData(GL_ARRAY_BUFFER, 0, 36*sizeof(vec3), vertices);
-            glBufferSubData(GL_ARRAY_BUFFER, 36*sizeof(vec3), 36*sizeof(vec4), colors);
-
-            
-            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-            
-        }
-    }
-
-    for (float z = 0.0; z < 100; z ++) {
-        for (float i = -4.0; i < 3.0; i++) {
-            singleton->setColorArray(rand() % kNumOfColors);
-            
-            transMatrix = Translate(i, 3.0f, z*-1);
-            
-            M = transMatrix * scaleMatrix * rotYMatrix;
-            
-            glBufferSubData(GL_ARRAY_BUFFER, 0, 36*sizeof(vec3), vertices);
-            glBufferSubData(GL_ARRAY_BUFFER, 36*sizeof(vec3), 36*sizeof(vec4), colors);
-            
-            // passing the Matrices IDs to the shaders .... 1 -> Number of Matrices
-            glUniformMatrix4fv(modelMatrixID, 1, GL_TRUE, M);
-            
-            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-            
-        }
-    }
-    for (float z = 0.0; z < 100; z ++) {
-        for (float i = -4.0; i < 4.0; i++) {
-            singleton->setColorArray(rand() % kNumOfColors);
-            
-            transMatrix = Translate(3.0f, 1*i, z*-1);
-            
-            M = transMatrix * scaleMatrix * rotYMatrix;
-            glBufferSubData(GL_ARRAY_BUFFER, 0, 36*sizeof(vec3), vertices);
-            glBufferSubData(GL_ARRAY_BUFFER, 36*sizeof(vec3), 36*sizeof(vec4), colors);
-            
-            // passing the Matrices IDs to the shaders .... 1 -> Number of Matrices
-            glUniformMatrix4fv(modelMatrixID, 1, GL_TRUE, M);
-            
-            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-            
-        }
-    }
-    for (float z = 0.0; z < 100; z ++) {
-        for (float i = -4.0; i < 4.0; i++) {
-            singleton->setColorArray(rand() % kNumOfColors);
-            
-            transMatrix = Translate(-4.0f, 1*i, z*-1);
-            
-            M = transMatrix * scaleMatrix * rotYMatrix;
-            glBufferSubData(GL_ARRAY_BUFFER, 0, 36*sizeof(vec3), vertices);
-            glBufferSubData(GL_ARRAY_BUFFER, 36*sizeof(vec3), 36*sizeof(vec4), colors);
-            
-            // passing the Matrices IDs to the shaders .... 1 -> Number of Matrices
-            glUniformMatrix4fv(modelMatrixID, 1, GL_TRUE, M);
-            
-            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-            
-        }
-    }
-    
-    for (float y = -4.0; y < 4.0; y++) {
-        for (float i = -4.0; i < 4.0; i++) {
-            singleton->setColorArray(rand() % kNumOfColors);
-            transMatrix = Translate(1*i, 1*y, -100);
-            
-            M = transMatrix * scaleMatrix * rotYMatrix;
-            glBufferSubData(GL_ARRAY_BUFFER, 0, 36*sizeof(vec3), vertices);
-            glBufferSubData(GL_ARRAY_BUFFER, 36*sizeof(vec3), 36*sizeof(vec4), colors);
-            
-            // passing the Matrices IDs to the shaders .... 1 -> Number of Matrices
-            glUniformMatrix4fv(modelMatrixID, 1, GL_TRUE, M);
-            
-            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-            
-        }
-    }
+//    glDrawArrays(GL_TRIANGLE_STRIP, 0, TotalNumberOfWallVertices);
     glutSwapBuffers();
-}
-
-void Game::reset()
-{
 }
 
 void Game::keyboard(unsigned char key, int x, int y)
