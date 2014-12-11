@@ -40,6 +40,7 @@ public:
     GLuint perspectiveMatrixID;
     GLuint viewMatrixID;
     GLuint modelMatrixID;
+    GLfloat eyeX, eyeY, eyeZ, centerX, centerY, centerZ;
 };
 
 #endif /* defined(___3DBouncingball__Game__) */

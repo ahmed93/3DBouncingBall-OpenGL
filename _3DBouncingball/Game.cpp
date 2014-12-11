@@ -12,8 +12,6 @@
 
 Game *Game::singleton = NULL;
 
-double eyeX, eyeY, eyeZ, centerX, centerY, centerZ;
-
 mat4 rotXMatrix;
 mat4 rotYMatrix;
 mat4 rotZMatrix;
@@ -25,7 +23,7 @@ mat4 P;
 
 GLfloat theta; // An amount of rotation along one axis
 GLfloat scaleAmount; //In case the object is too big or small
-using namespace std;
+
 void Game::run(int argc, char **argv)
 {
     currentStartPoint = 0;
@@ -61,13 +59,13 @@ void Game::initMatrices()
     M = identity();
     V = identity();
     P = identity();
-    
-    eyeX = 0.3;
+
+    eyeX = 1;
     eyeY = 1;
-    eyeZ = 8;
-    centerX = 0.0;
-    centerY = 0;
-    centerZ = 0.0;
+    eyeZ = 5;
+    centerX = 1;
+    centerY = 1;
+    centerZ = -1000;
 }
 
 void Game::init()
@@ -84,39 +82,39 @@ void Game::init()
     GLuint vboID;
     glGenBuffers(1, &vboID);
     glBindBuffer(GL_ARRAY_BUFFER, vboID);
-    glBufferData(GL_ARRAY_BUFFER, WALL_TOTAL_OFFSET, NULL, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, CTotal_OFFSET_OfVetices  + CTotal_OFFSET_OfColors, NULL, GL_STATIC_DRAW);
     
     GLuint vPosition = glGetAttribLocation(program, "vPosition");
     GLuint vColor = glGetAttribLocation(program, "vColor");
     
+    glVertexAttribPointer(vPosition, 3, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0));
+    glVertexAttribPointer(vColor, 4, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(CTotal_OFFSET_OfVetices));
+    glEnableVertexAttribArray(vPosition);
+    glEnableVertexAttribArray(vColor);
+    
     perspectiveMatrixID = glGetUniformLocation(program, "mP");
     viewMatrixID = glGetUniformLocation(program, "mV");
     modelMatrixID = glGetUniformLocation(program, "mM");
-
-    glVertexAttribPointer(vPosition, 3, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0));
-    glVertexAttribPointer(vColor, 4, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(VWALL_OFFSET));
-    glEnableVertexAttribArray(vPosition);
-    glEnableVertexAttribArray(vColor);
-    glClearColor(1.0, 1.0, 1.0, 1.0);
+    
+    glClearColor(0.9, 0.9, 0.9, 1.0);
 }
 
 void Game::reset()
 {
-    P = Perspective(60.0f, 1.0f, 0.1f, 1000.0f);
-    V = LookAt(vec4(eyeX,eyeY,eyeZ,0), vec4(centerX,centerY,centerZ,0), vec4(0,1,0,0));
-    glUniformMatrix4fv(singleton->viewMatrixID, 1, GL_TRUE, V);
-    glUniformMatrix4fv(singleton->perspectiveMatrixID, 1, GL_TRUE, P);
-    singleton->room->writeBuffer();
+    eyeX = 1;
+    eyeY = 1;
+    eyeZ = 5;
+    centerX = 1;
+    centerY = 1;
+    centerZ = -1000;
+    singleton->room->reset();
 }
 
 void Game::display()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    V = LookAt(vec4(eyeX,eyeY,eyeZ,0), vec4(centerX,centerY,centerZ,0), vec4(0,1,0,0));
-    glUniformMatrix4fv(singleton->viewMatrixID, 1, GL_TRUE, V);
-    singleton->reset();
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, TotalNumberOfWallVertices);
+    singleton->room->writeBuffer();
+    
     glutSwapBuffers();
 }
 
@@ -124,24 +122,16 @@ void Game::keyboard(unsigned char key, int x, int y)
 {
     switch (key){
         case GLUT_KEY_DOWN:
-            eyeX -= 0.1 * (centerX - eyeX);
-            eyeZ -= 0.1 * (centerZ - eyeZ);
+            singleton->eyeX -= 0.1 * (singleton->centerX - singleton->eyeX);
+            singleton->eyeZ -= 0.1 * (singleton->centerZ - singleton->eyeZ);
             break;
         case GLUT_KEY_UP:
-            eyeX += 0.1 * (centerX - eyeX);
-            eyeZ += 0.1 * (centerZ - eyeZ);
+//            singleton->eyeX += 0.1 * (singleton->centerX - singleton->eyeX);
+            singleton->eyeZ --;
+            ;//* (singleton->centerZ - singleton->eyeZ);
             break;
-        case GLUT_KEY_LEFT:
-            eyeZ-= 0.1;
-            break;
-        case GLUT_KEY_RIGHT:
-            eyeZ+= 0.1;
-            break;
-        case 'w':
-            eyeY+= 0.1;
-            break;
-        case 's':
-            eyeY -= 0.1;
+        case 'r':
+            singleton->reset();
             break;
     }
 }

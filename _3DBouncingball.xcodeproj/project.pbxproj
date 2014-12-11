@@ -11,6 +11,8 @@
 		A79188261A1B8BB1002CE0DD /* vshader.glsl in Copy Files (2 items) */ = {isa = PBXBuildFile; fileRef = A79188241A1B8AB4002CE0DD /* vshader.glsl */; };
 		A79188271A1B8BB1002CE0DD /* fshader.glsl in Copy Files (2 items) */ = {isa = PBXBuildFile; fileRef = A79188251A1B8AB4002CE0DD /* fshader.glsl */; };
 		A791882A1A1B9BEC002CE0DD /* Room.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A79188281A1B9BEC002CE0DD /* Room.cpp */; };
+		A7E1B3A71A3A08540036071A /* Texture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7E1B3A51A3A08540036071A /* Texture.cpp */; };
+		A7E320191A2515B70038722B /* Sphere.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7E320171A2515B70038722B /* Sphere.cpp */; };
 		A7EAE5121A17EAD700C70476 /* GLUT.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7EAE5111A17EAD700C70476 /* GLUT.framework */; };
 		A7EAE5141A17EADB00C70476 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7EAE5131A17EADB00C70476 /* OpenGL.framework */; };
 		A7EAE51F1A17ED0000C70476 /* BouncingBall.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7EAE51E1A17ED0000C70476 /* BouncingBall.cpp */; };
@@ -41,6 +43,11 @@
 		A79188251A1B8AB4002CE0DD /* fshader.glsl */ = {isa = PBXFileReference; explicitFileType = sourcecode.glsl; path = fshader.glsl; sourceTree = "<group>"; };
 		A79188281A1B9BEC002CE0DD /* Room.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Room.cpp; sourceTree = "<group>"; };
 		A79188291A1B9BEC002CE0DD /* Room.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Room.h; sourceTree = "<group>"; };
+		A7E1B39D1A39F4290036071A /* cube.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = cube.obj; sourceTree = "<group>"; };
+		A7E1B3A51A3A08540036071A /* Texture.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Texture.cpp; sourceTree = "<group>"; };
+		A7E1B3A61A3A08540036071A /* Texture.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Texture.h; sourceTree = "<group>"; };
+		A7E320171A2515B70038722B /* Sphere.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Sphere.cpp; sourceTree = "<group>"; };
+		A7E320181A2515B70038722B /* Sphere.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Sphere.h; sourceTree = "<group>"; };
 		A7EAE5071A17EAAF00C70476 /* _3DBouncingball */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = _3DBouncingball; sourceTree = BUILT_PRODUCTS_DIR; };
 		A7EAE5111A17EAD700C70476 /* GLUT.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLUT.framework; path = System/Library/Frameworks/GLUT.framework; sourceTree = SDKROOT; };
 		A7EAE5131A17EADB00C70476 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
@@ -100,6 +107,10 @@
 				A7EAE5201A17ED3A00C70476 /* Game.cpp */,
 				A79188291A1B9BEC002CE0DD /* Room.h */,
 				A79188281A1B9BEC002CE0DD /* Room.cpp */,
+				A7E320171A2515B70038722B /* Sphere.cpp */,
+				A7E320181A2515B70038722B /* Sphere.h */,
+				A7E1B3A51A3A08540036071A /* Texture.cpp */,
+				A7E1B3A61A3A08540036071A /* Texture.h */,
 			);
 			path = _3DBouncingball;
 			sourceTree = "<group>";
@@ -107,6 +118,7 @@
 		A7EAE5191A17EB3F00C70476 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				A7E1B39D1A39F4290036071A /* cube.obj */,
 				A7EAE5291A17EDA200C70476 /* Constants.h */,
 				A70259E81A1812D50082689B /* E-libs */,
 				A7EAE51A1A17EB4700C70476 /* Shaders */,
@@ -183,6 +195,8 @@
 				A791882A1A1B9BEC002CE0DD /* Room.cpp in Sources */,
 				A70259EB1A188A540082689B /* InitShader.cpp in Sources */,
 				A7EAE5221A17ED3A00C70476 /* Game.cpp in Sources */,
+				A7E1B3A71A3A08540036071A /* Texture.cpp in Sources */,
+				A7E320191A2515B70038722B /* Sphere.cpp in Sources */,
 				A7EAE51F1A17ED0000C70476 /* BouncingBall.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -267,6 +281,10 @@
 		A7EAE50F1A17EAAF00C70476 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -274,6 +292,10 @@
 		A7EAE5101A17EAAF00C70476 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;

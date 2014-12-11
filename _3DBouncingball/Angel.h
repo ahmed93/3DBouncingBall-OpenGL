@@ -71,5 +71,6 @@ const GLfloat  DegreesToRadians = M_PI / 180.0;
 
 //  Globally use our namespace in our example programs.
 using namespace Angel;
+using namespace std;
 
 #endif // __ANGEL_H__
