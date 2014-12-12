@@ -8,7 +8,8 @@
 
 #include "Angel.h"
 #include "Game.h"
-#include "Room.H"
+#include "Room.h"
+#include "Texture.h"
 
 Game *Game::singleton = NULL;
 
@@ -20,7 +21,8 @@ mat4 tempMatrix;
 mat4 M;
 mat4 V;
 mat4 P;
-
+//GLuint  Texture;
+GLuint uvbuffer;
 GLfloat theta; // An amount of rotation along one axis
 GLfloat scaleAmount; //In case the object is too big or small
 
@@ -35,6 +37,7 @@ void Game::run(int argc, char **argv)
     glutInitWindowPosition(100,50);
     glutCreateWindow("3D Bouncing Ball ...");
     initMatrices();
+    sphere = new Sphere();
     init();
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
@@ -62,7 +65,7 @@ void Game::initMatrices()
 
     eyeX = 1;
     eyeY = 1;
-    eyeZ = 5;
+    eyeZ = 3;
     centerX = 1;
     centerY = 1;
     centerZ = -1000;
@@ -82,20 +85,23 @@ void Game::init()
     GLuint vboID;
     glGenBuffers(1, &vboID);
     glBindBuffer(GL_ARRAY_BUFFER, vboID);
-    glBufferData(GL_ARRAY_BUFFER, CTotal_OFFSET_OfVetices  + CTotal_OFFSET_OfColors, NULL, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, 36*sizeof(vec3) + 36*sizeof(vec2), NULL, GL_DYNAMIC_DRAW);
+
     
-    GLuint vPosition = glGetAttribLocation(program, "vPosition");
-    GLuint vColor = glGetAttribLocation(program, "vColor");
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0));
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(sizeof(vertices)));
     
-    glVertexAttribPointer(vPosition, 3, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0));
-    glVertexAttribPointer(vColor, 4, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(CTotal_OFFSET_OfVetices));
-    glEnableVertexAttribArray(vPosition);
-    glEnableVertexAttribArray(vColor);
+    glEnableVertexAttribArray(0);
+    glEnableVertexAttribArray(1);
+    
+    // Get a handle for our "myTextureSampler" uniform
+    TextureID  = glGetUniformLocation(program, "myTextureSampler");
     
     perspectiveMatrixID = glGetUniformLocation(program, "mP");
     viewMatrixID = glGetUniformLocation(program, "mV");
     modelMatrixID = glGetUniformLocation(program, "mM");
-    
+    room->setTexture("img.bmp");
+    sphere->setTexture("uvmap.DDS");
     glClearColor(0.9, 0.9, 0.9, 1.0);
 }
 
@@ -103,17 +109,18 @@ void Game::reset()
 {
     eyeX = 1;
     eyeY = 1;
-    eyeZ = 5;
+    eyeZ = 3;
     centerX = 1;
     centerY = 1;
     centerZ = -1000;
-    singleton->room->reset();
+    //singleton->room->reset();
 }
 
 void Game::display()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     singleton->room->writeBuffer();
+    singleton->sphere->writeBuffer();
     
     glutSwapBuffers();
 }

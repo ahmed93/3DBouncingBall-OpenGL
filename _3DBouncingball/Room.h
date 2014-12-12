@@ -11,6 +11,7 @@
 
 #include "Constants.h"
 #include "Game.h"
+#include "Texture.h"
 
 class Room {
 private:
@@ -24,11 +25,13 @@ protected:
     void drawWall(mat4);
     void drawWall(int wallT,bool frontWall);
     int setScore(int colorID);
+    void drawCube(mat4);
     
 public:    
     Room();
     void init();
     void reset();
+    void setTexture(char*);
     void writeBuffer();
 };
 

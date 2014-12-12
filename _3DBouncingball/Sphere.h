@@ -10,13 +10,16 @@
 #define ___3DBouncingball__Sphere__
 
 #include "Constants.h"
-
+#include "Game.h"
 
 class Sphere {
-    
-    
+protected:
+    void drawS(mat4);
 public:
-    void create(float Radius, int Resolution);
+    Sphere();
+    ~Sphere();
+    void setTexture(char* filename);
+    void writeBuffer();
 };
 
 #endif /* defined(___3DBouncingball__Sphere__) */

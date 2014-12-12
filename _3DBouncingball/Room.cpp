@@ -8,7 +8,7 @@
 
 #include "Room.h"
 
-#define GameSingleton Game::singleton
+static GLuint Texture;
 
 Room::Room()
 {
@@ -76,405 +76,106 @@ int Room::setScore(int colorID)
     return score;
 }
 
+void Room::setTexture(char* filename)
+{
+    Texture = loadBMP_custom(filename);
+}
+
+
+void Room::drawCube(mat4 M)
+{
+    
+    // Bind our texture in Texture Unit 0
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, Texture);
+    
+    // Set our "myTextureSampler" sampler to user Texture Unit 0
+    glUniform1i(GameSingleton->TextureID, 0);
+
+    mat4 P = Perspective(80.0f, 1.0f, 0.1f, WALL_DEPTH);
+    mat4 V = LookAt(vec4(GameSingleton->eyeX,GameSingleton->eyeY,GameSingleton->eyeZ,0),vec4(GameSingleton->centerX,GameSingleton->centerY,GameSingleton->centerZ,0),vec4(0,1,0,0));
+    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
+    glBufferSubData(GL_ARRAY_BUFFER, sizeof(vertices), sizeof(uv_buffer_data), uv_buffer_data);
+    
+    // passing the Matrices IDs to the shaders .... 1 -> Number of Matrices
+    glUniformMatrix4fv(GameSingleton->viewMatrixID, 1, GL_TRUE, V);
+    glUniformMatrix4fv(GameSingleton->perspectiveMatrixID, 1, GL_TRUE, P);
+    glUniformMatrix4fv(GameSingleton->modelMatrixID, 1, GL_TRUE, M);
+    
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 36);
+
+}
+
+
 void Room::writeBuffer()
 {
-        for (int z = 0; z < WALL_DEPTH; z++) {
-            for (int i = -4; i < 4; i++) {
-                vec4 colors[36];
-                
-                for (int idC = 0 ; idC < 36; idC++){
-                    int colorID = (int)BOTTOM_WALL_SCORE[i+4][z].x;
-                    colors[idC] = kDefaultColors[colorID];
-                }
-                
-                mat4 transMatrix = Translate(i, -4.0f, z*-1);
-                
-                mat4 M = transMatrix * scaleMatrix ;
-                mat4 P = Perspective(80.0f, 1.0f, 0.1f, WALL_DEPTH);
-                mat4 V = LookAt(vec4(GameSingleton->eyeX,GameSingleton->eyeY,GameSingleton->eyeZ,0),
-                                vec4(GameSingleton->centerX,GameSingleton->centerY,GameSingleton->centerZ,0),
-                                vec4(0,1,0,0));
-    
-                // passing the Matrices IDs to the shaders .... 1 -> Number of Matrices
-                glUniformMatrix4fv(GameSingleton->viewMatrixID, 1, GL_TRUE, V);
-                glUniformMatrix4fv(GameSingleton->perspectiveMatrixID, 1, GL_TRUE, P);
-                glUniformMatrix4fv(GameSingleton->modelMatrixID, 1, GL_TRUE, M);
-                
-                glBufferSubData(GL_ARRAY_BUFFER, 0, 36 * sizeof(vec3), vertices);
-
-                glBufferSubData(GL_ARRAY_BUFFER, CTotal_OFFSET_OfVetices, sizeof(colors), colors);
-    
-                glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-                glDrawArrays(GL_TRIANGLE_STRIP, 0, 36);
-            }
-        }
+    // Bottom Wall
     for (int z = 0; z < WALL_DEPTH; z++) {
         for (int i = -4; i < 4; i++) {
-            vec4 colors[36];
-            
-            for (int idC = 0 ; idC < 36; idC++){
-                int colorID = (int)TOP_WALL_SCORE[i+4][z].x;
-                colors[idC] = kDefaultColors[colorID];
-            }
-            
+            mat4 transMatrix = Translate(i, -4.0f, z*-1);
+            mat4 M = transMatrix * scaleMatrix ;
+            drawCube(M);
+        }
+    }
+    // Top Wall
+    for (int z = 0; z < WALL_DEPTH; z++) {
+        for (int i = -4; i <= 4; i++) {
             mat4 transMatrix = Translate(i, 4.0f, z*-1);
-            
             mat4 M = transMatrix * scaleMatrix ;
-            mat4 P = Perspective(80.0f, 1.0f, 0.1f, WALL_DEPTH);
-            mat4 V = LookAt(vec4(GameSingleton->eyeX,GameSingleton->eyeY,GameSingleton->eyeZ,0),
-                            vec4(GameSingleton->centerX,GameSingleton->centerY,GameSingleton->centerZ,0),
-                            vec4(0,1,0,0));
-            
-            // passing the Matrices IDs to the shaders .... 1 -> Number of Matrices
-            glUniformMatrix4fv(GameSingleton->viewMatrixID, 1, GL_TRUE, V);
-            glUniformMatrix4fv(GameSingleton->perspectiveMatrixID, 1, GL_TRUE, P);
-            glUniformMatrix4fv(GameSingleton->modelMatrixID, 1, GL_TRUE, M);
-            
-            glBufferSubData(GL_ARRAY_BUFFER, 0, 36 * sizeof(vec3), vertices);
-            
-            glBufferSubData(GL_ARRAY_BUFFER, CTotal_OFFSET_OfVetices, sizeof(colors), colors);
-            
-            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-            glDrawArrays(GL_TRIANGLE_STRIP, 0, 36);
+            drawCube(M);
         }
     }
 
+    // Left Wall
     for (int z = 0; z < WALL_DEPTH; z++) {
         for (int i = -4; i < 4; i++) {
-            vec4 colors[36];
-            
-            for (int idC = 0 ; idC < 36; idC++){
-                int colorID = (int)LEFT_WALL_SCORE[i+4][z].x;
-                colors[idC] = kDefaultColors[colorID];
-            }
-            
+            mat4 rotateZ = RotateZ(90);
             mat4 transMatrix = Translate(-4.0f, 1*i, z*-1);
-            
-            mat4 M = transMatrix * scaleMatrix ;
-            mat4 P = Perspective(80.0f, 1.0f, 0.1f, WALL_DEPTH);
-            mat4 V = LookAt(vec4(GameSingleton->eyeX,GameSingleton->eyeY,GameSingleton->eyeZ,0),
-                            vec4(GameSingleton->centerX,GameSingleton->centerY,GameSingleton->centerZ,0),
-                            vec4(0,1,0,0));
-            
-            // passing the Matrices IDs to the shaders .... 1 -> Number of Matrices
-            glUniformMatrix4fv(GameSingleton->viewMatrixID, 1, GL_TRUE, V);
-            glUniformMatrix4fv(GameSingleton->perspectiveMatrixID, 1, GL_TRUE, P);
-            glUniformMatrix4fv(GameSingleton->modelMatrixID, 1, GL_TRUE, M);
-            
-            glBufferSubData(GL_ARRAY_BUFFER, 0, 36 * sizeof(vec3), vertices);
-            
-            glBufferSubData(GL_ARRAY_BUFFER, CTotal_OFFSET_OfVetices, sizeof(colors), colors);
-            
-            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-            glDrawArrays(GL_TRIANGLE_STRIP, 0, 36);
+            mat4 M = transMatrix * scaleMatrix * rotateZ ;
+            drawCube(M);
         }
     }
+    // Right Wall
     for (int z = 0; z < WALL_DEPTH; z++) {
         for (int i = -4; i < 4; i++) {
-            vec4 colors[36];
-            
-            for (int idC = 0 ; idC < 36; idC++){
-                int colorID = (int)RIGHT_WALL_SCORE[i+4][z].x;
-                colors[idC] = kDefaultColors[colorID];
-            }
-            
+            mat4 rotateZ = RotateZ(90);
             mat4 transMatrix = Translate(4.0f, 1*i, z*-1);
-            
-            mat4 M = transMatrix * scaleMatrix ;
-            mat4 P = Perspective(80.0f, 1.0f, 0.1f, WALL_DEPTH);
-            mat4 V = LookAt(vec4(GameSingleton->eyeX,GameSingleton->eyeY,GameSingleton->eyeZ,0),
-                            vec4(GameSingleton->centerX,GameSingleton->centerY,GameSingleton->centerZ,0),
-                            vec4(0,1,0,0));
-            
-            // passing the Matrices IDs to the shaders .... 1 -> Number of Matrices
-            glUniformMatrix4fv(GameSingleton->viewMatrixID, 1, GL_TRUE, V);
-            glUniformMatrix4fv(GameSingleton->perspectiveMatrixID, 1, GL_TRUE, P);
-            glUniformMatrix4fv(GameSingleton->modelMatrixID, 1, GL_TRUE, M);
-            
-            glBufferSubData(GL_ARRAY_BUFFER, 0, 36 * sizeof(vec3), vertices);
-            
-            glBufferSubData(GL_ARRAY_BUFFER, CTotal_OFFSET_OfVetices, sizeof(colors), colors);
-            
-            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-            glDrawArrays(GL_TRIANGLE_STRIP, 0, 36);
+            mat4 M = transMatrix * scaleMatrix * rotateZ ;
+            drawCube(M);
         }
     }
     
-    
+    // Front Wall
     for (int z = -4; z < 4; z++) {
         for (int i = -4; i < 4; i++) {
-            vec4 colors[36];
-            
-            for (int idC = 0 ; idC < 36; idC++){
-                int colorID = (int)FRONT_WALL_SCORE[i+4][z+4].x;
-                colors[idC] = kDefaultColors[colorID];
-            }
-            
             mat4 transMatrix = Translate(i, z, -WALL_DEPTH);
-            
             mat4 M = transMatrix * scaleMatrix ;
-            mat4 P = Perspective(80.0f, 1.0f, 0.1f, WALL_DEPTH);
-            mat4 V = LookAt(vec4(GameSingleton->eyeX,GameSingleton->eyeY,GameSingleton->eyeZ,0),
-                            vec4(GameSingleton->centerX,GameSingleton->centerY,GameSingleton->centerZ,0),
-                            vec4(0,1,0,0));
-            
-            // passing the Matrices IDs to the shaders .... 1 -> Number of Matrices
-            glUniformMatrix4fv(GameSingleton->viewMatrixID, 1, GL_TRUE, V);
-            glUniformMatrix4fv(GameSingleton->perspectiveMatrixID, 1, GL_TRUE, P);
-            glUniformMatrix4fv(GameSingleton->modelMatrixID, 1, GL_TRUE, M);
-            
-            glBufferSubData(GL_ARRAY_BUFFER, 0, 36 * sizeof(vec3), vertices);
-            
-            glBufferSubData(GL_ARRAY_BUFFER, CTotal_OFFSET_OfVetices, sizeof(colors), colors);
-            
-            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-            glDrawArrays(GL_TRIANGLE_STRIP, 0, 36);
-            //                Game::singleton->currentStartPoint += 1;
+            drawCube(M);
         }
     }
+    /////// -------------- Generating obsticlas ------------- ///
     
     for (int z = -4; z < 4; z++) {
         for (int i = -4; i < 0; i++) {
-            vec4 colors[36];
-            
-            for (int idC = 0 ; idC < 36; idC++){
-                int colorID = (int)FRONT_WALL_SCORE[i+4][z+4].x;
-                colors[idC] = kDefaultColors[colorID];
-            }
-            
             mat4 transMatrix = Translate(i, z, -50);
-            
             mat4 M = transMatrix * scaleMatrix ;
-            mat4 P = Perspective(80.0f, 1.0f, 0.1f, WALL_DEPTH);
-            mat4 V = LookAt(vec4(GameSingleton->eyeX,GameSingleton->eyeY,GameSingleton->eyeZ,0),
-                            vec4(GameSingleton->centerX,GameSingleton->centerY,GameSingleton->centerZ,0),
-                            vec4(0,1,0,0));
-            
-            // passing the Matrices IDs to the shaders .... 1 -> Number of Matrices
-            glUniformMatrix4fv(GameSingleton->viewMatrixID, 1, GL_TRUE, V);
-            glUniformMatrix4fv(GameSingleton->perspectiveMatrixID, 1, GL_TRUE, P);
-            glUniformMatrix4fv(GameSingleton->modelMatrixID, 1, GL_TRUE, M);
-            
-            glBufferSubData(GL_ARRAY_BUFFER, 0, 36 * sizeof(vec3), vertices);
-            
-            glBufferSubData(GL_ARRAY_BUFFER, CTotal_OFFSET_OfVetices, sizeof(colors), colors);
-            
-            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-            glDrawArrays(GL_TRIANGLE_STRIP, 0, 36);
-            //                Game::singleton->currentStartPoint += 1;
+            drawCube(M);
         }
     }
     for (int z = -4; z < 4; z++) {
         for (int i = -4; i < -1; i++) {
-            vec4 colors[36];
-            
-            for (int idC = 0 ; idC < 36; idC++){
-                int colorID = (int)FRONT_WALL_SCORE[i+4][z+4].x;
-                colors[idC] = kDefaultColors[colorID];
-            }
-            
             mat4 transMatrix = Translate(i, z, -WALL_DEPTH);
-            
             mat4 M = transMatrix * scaleMatrix ;
-            mat4 P = Perspective(80.0f, 1.0f, 0.1f, WALL_DEPTH);
-            mat4 V = LookAt(vec4(GameSingleton->eyeX,GameSingleton->eyeY,GameSingleton->eyeZ,0),
-                            vec4(GameSingleton->centerX,GameSingleton->centerY,GameSingleton->centerZ,0),
-                            vec4(0,1,0,0));
-            
-            // passing the Matrices IDs to the shaders .... 1 -> Number of Matrices
-            glUniformMatrix4fv(GameSingleton->viewMatrixID, 1, GL_TRUE, V);
-            glUniformMatrix4fv(GameSingleton->perspectiveMatrixID, 1, GL_TRUE, P);
-            glUniformMatrix4fv(GameSingleton->modelMatrixID, 1, GL_TRUE, M);
-            
-            glBufferSubData(GL_ARRAY_BUFFER, 0, 36 * sizeof(vec3), vertices);
-            
-            glBufferSubData(GL_ARRAY_BUFFER, CTotal_OFFSET_OfVetices, sizeof(colors), colors);
-            
-            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-            glDrawArrays(GL_TRIANGLE_STRIP, 0, 36);
-            // Game::singleton->currentStartPoint += 1;
+            drawCube(M);
         }
     }
     
     for (int z = -4; z <-1; z++) {
         for (int i = -4; i < 4; i++) {
-            vec4 colors[36];
-            
-            for (int idC = 0 ; idC < 36; idC++){
-                int colorID = (int)FRONT_WALL_SCORE[i+4][z+4].x;
-                colors[idC] = kDefaultColors[colorID];
-            }
-            
             mat4 transMatrix = Translate(-i, z, -15);
-            
             mat4 M = transMatrix * scaleMatrix ;
-            mat4 P = Perspective(80.0f, 1.0f, 0.1f, WALL_DEPTH);
-            mat4 V = LookAt(vec4(GameSingleton->eyeX,GameSingleton->eyeY,GameSingleton->eyeZ,0),
-                            vec4(GameSingleton->centerX,GameSingleton->centerY,GameSingleton->centerZ,0),
-                            vec4(0,1,0,0));
-            
-            // passing the Matrices IDs to the shaders .... 1 -> Number of Matrices
-            glUniformMatrix4fv(GameSingleton->viewMatrixID, 1, GL_TRUE, V);
-            glUniformMatrix4fv(GameSingleton->perspectiveMatrixID, 1, GL_TRUE, P);
-            glUniformMatrix4fv(GameSingleton->modelMatrixID, 1, GL_TRUE, M);
-            
-            glBufferSubData(GL_ARRAY_BUFFER, 0, 36 * sizeof(vec3), vertices);
-            
-            glBufferSubData(GL_ARRAY_BUFFER, CTotal_OFFSET_OfVetices, sizeof(colors), colors);
-            
-            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-            glDrawArrays(GL_TRIANGLE_STRIP, 0, 36);
-            //                Game::singleton->currentStartPoint += 1;
+            drawCube(M);
         }
     }
-
 }
-
-//void Room::drawWall(int wallT,bool frontWall)
-//{
-//    int depth = frontWall?4:WALL_DEPTH;
-//    int width = WALL_WIDTH/2;
-//    for (int i = frontWall?-4:0 ; i < depth; i++) {
-//        for (int j = -4; j < 4; j++) {
-//            mat4 transMatrix;
-//            vec4 colors[36];
-//            int colorId = 0;
-//            if(wallT == 1) {// Front wall
-//                transMatrix = Translate(i, j, -1.0f * WALL_DEPTH);
-//                colorId = (int) FRONT_WALL_SCORE[j+width][i].x;
-//            }
-//            else if(wallT == 2){ // Bottom wall
-//                transMatrix = Translate(j * 1.0f, -width * 1.0f, i * -1.0f);
-//                colorId =(int) BOTTOM_WALL_SCORE[j+width][i].x;
-//            }
-//            else if(wallT == 3) {// Top wall
-//                transMatrix = Translate(j* 1.0f,  width * 1.0f, i * -1.0f);
-//                colorId =(int)  TOP_WALL_SCORE[j+width][i].x;
-//            }
-//            else if(wallT == 4) {// RIght wall
-//                transMatrix = Translate( width * 1.0f, j * 1.0f, i * -1.0f);
-//                colorId =(int)  RIGHT_WALL_SCORE[j+width][i].x;
-//            }
-//            else if(wallT == 5) {// Left wall
-//                transMatrix = Translate( -width * 1.0f, j * 1.0f, i * -1.0f);
-//                colorId =(int)  LEFT_WALL_SCORE[j+width][i].x;
-//            }
-//            
-//            for (int idC = 0 ; idC < 36; idC++)
-//                colors[idC] = kDefaultColors[colorId];
-//        
-//            mat4 M = transMatrix * scaleMatrix;
-//            mat4 P = Perspective(80.0f, 1.0f, 0.1f, 100.0f);
-//            mat4 V = LookAt(vec4(GameSingleton->eyeX,GameSingleton->eyeY,GameSingleton->eyeZ,0),
-//                            vec4(GameSingleton->centerX,GameSingleton->centerY,GameSingleton->centerZ,0),
-//                            vec4(0,1,0,0));
-//            cout << colorId << endl;
-//            // passing the Matrices IDs to the shaders .... 1 -> Number of Matrices
-//            glUniformMatrix4fv(GameSingleton->viewMatrixID, 1, GL_TRUE, M);
-//            glUniformMatrix4fv(GameSingleton->viewMatrixID, 1, GL_TRUE, V);
-//            glUniformMatrix4fv(GameSingleton->perspectiveMatrixID, 1, GL_TRUE, P);
-//            
-//            GLuint currentCount = GameSingleton->currentStartPoint;
-//            
-//            GLuint StartVertix = currentCount * sizeof(vertices);
-//            glBufferSubData(GL_ARRAY_BUFFER, StartVertix, sizeof(vertices), vertices);
-//            
-//////
-////            GLuint StartColorVertix = CTotal_OFFSET_OfVetices + (currentCount * sizeof(colors));
-////            glBufferSubData(GL_ARRAY_BUFFER,StartColorVertix, sizeof(colors), colors);
-//            
-//            GameSingleton->currentStartPoint += 1;
-//        }
-//    }
-//}
-
-//for (float z = 0.0; z < 100; z ++) {
-//    for (float i = -4.0; i < 4.0; i++) {
-//        singleton->setColorArray(rand() % kNumOfColors);
-//        transMatrix = Translate(i, -4.0f, z*-1);
-//        M = transMatrix * scaleMatrix * rotYMatrix;
-//        // passing the Matrices IDs to the shaders .... 1 -> Number of Matrices
-//        
-//        glUniformMatrix4fv(modelMatrixID, 1, GL_TRUE, M);
-//        glBufferSubData(GL_ARRAY_BUFFER, 0, 36*sizeof(vec3), vertices);
-//        glBufferSubData(GL_ARRAY_BUFFER, 36*sizeof(vec3), 36*sizeof(vec4), colors);
-//        
-//        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-//        glDrawArrays(GL_TRIANGLES, 0, 36);
-//
-//    }
-//}
-//
-//for (float z = 0.0; z < 100; z ++) {
-//    for (float i = -4.0; i < 4.0; i++) {
-//        singleton->setColorArray(rand() % kNumOfColors);
-//        
-//        transMatrix = Translate(i, 3.0f, z*-1);
-//        
-//        M = transMatrix * scaleMatrix * rotYMatrix;
-//        
-//        glBufferSubData(GL_ARRAY_BUFFER, 0, 36*sizeof(vec3), vertices);
-//        glBufferSubData(GL_ARRAY_BUFFER, 36*sizeof(vec3), 36*sizeof(vec4), colors);
-//        
-//        // passing the Matrices IDs to the shaders .... 1 -> Number of Matrices
-//        glUniformMatrix4fv(modelMatrixID, 1, GL_TRUE, M);
-//        
-//        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-//        glDrawArrays(GL_TRIANGLES, 0, 36);
-//        
-//    }
-//}
-//for (float z = 0.0; z < 100; z ++) {
-//    for (float i = -4.0; i < 4.0; i++) {
-//        singleton->setColorArray(rand() % kNumOfColors);
-//        
-//        transMatrix = Translate(3.0f, 1*i, z*-1);
-//        
-//        M = transMatrix * scaleMatrix * rotYMatrix;
-//        glBufferSubData(GL_ARRAY_BUFFER, 0, 36*sizeof(vec3), vertices);
-//        glBufferSubData(GL_ARRAY_BUFFER, 36*sizeof(vec3), 36*sizeof(vec4), colors);
-//        
-//        // passing the Matrices IDs to the shaders .... 1 -> Number of Matrices
-//        glUniformMatrix4fv(modelMatrixID, 1, GL_TRUE, M);
-//        
-//        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-//        glDrawArrays(GL_TRIANGLES, 0, 36);
-//        
-//    }
-//}
-//for (float z = 0.0; z < 100; z ++) {
-//    for (float i = -4.0; i < 4.0; i++) {
-//        singleton->setColorArray(rand() % kNumOfColors);
-//        
-//        transMatrix = Translate(-4.0f, 1*i, z*-1);
-//
-//        M = transMatrix * scaleMatrix * rotYMatrix;
-//        glBufferSubData(GL_ARRAY_BUFFER, 0, 36*sizeof(vec3), vertices);
-//        glBufferSubData(GL_ARRAY_BUFFER, 36*sizeof(vec3), 36*sizeof(vec4), colors);
-//        
-//        // passing the Matrices IDs to the shaders .... 1 -> Number of Matrices
-//        glUniformMatrix4fv(modelMatrixID, 1, GL_TRUE, M);
-//        
-//        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-//        glDrawArrays(GL_TRIANGLES, 0, 36);
-//        
-//    }
-//}
-//
-//for (float y = -4.0; y < 4.0; y++) {
-//    for (float i = -4.0; i < 4.0; i++) {
-//        singleton->setColorArray(rand() % kNumOfColors);
-//        transMatrix = Translate(1*i, 1*y, -100);
-//        
-//        M = transMatrix * scaleMatrix * rotYMatrix;
-//        glBufferSubData(GL_ARRAY_BUFFER, 0, 36*sizeof(vec3), vertices);
-//        glBufferSubData(GL_ARRAY_BUFFER, 36*sizeof(vec3), 36*sizeof(vec4), colors);
-//        
-//        // passing the Matrices IDs to the shaders .... 1 -> Number of Matrices
-//        glUniformMatrix4fv(modelMatrixID, 1, GL_TRUE, M);
-//        
-//        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-//        glDrawArrays(GL_TRIANGLES, 0, 36);
-//        
-//    }
-//}

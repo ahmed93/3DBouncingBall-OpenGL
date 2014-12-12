@@ -11,13 +11,16 @@
 
 #include "Constants.h"
 #include "Room.h"
+#include "Sphere.h"
 
 class Room;
+class Sphere;
 
 class Game {
 private:
     bool is_game_over;
     Room *room;
+    Sphere *sphere;
     
 protected:
     void init();
@@ -40,6 +43,7 @@ public:
     GLuint perspectiveMatrixID;
     GLuint viewMatrixID;
     GLuint modelMatrixID;
+    GLuint TextureID;
     GLfloat eyeX, eyeY, eyeZ, centerX, centerY, centerZ;
 };
 

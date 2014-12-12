@@ -69,6 +69,8 @@ const GLfloat  DegreesToRadians = M_PI / 180.0;
 
 #define PrintC(x) { std::cout << #x " = " << (x) << std::endl; } 
 
+#define GameSingleton Game::singleton
+
 //  Globally use our namespace in our example programs.
 using namespace Angel;
 using namespace std;
