@@ -17,9 +17,13 @@ protected:
     void drawS(mat4);
 public:
     Sphere();
-    ~Sphere();
+
     void setTexture(char* filename);
     void writeBuffer();
+    void transRight(GLfloat);
+    void transLeft(GLfloat);
+    void jump();
+    vec3 getLoc();
 };
 
 #endif /* defined(___3DBouncingball__Sphere__) */

@@ -14,21 +14,18 @@ static vector<vec3> sVertices;
 static vector<vec2> sUVS;
 static vector<vec3> sNormals;
 static GLuint Texture;
-
+static GLfloat x = 0,y = -3;
+bool downball = false;
 Sphere::Sphere()
 {
     // Read our .obj file
     loadOBJ("cube.obj", sVertices, sUVS, sNormals);
 }
 
-Sphere::~Sphere()
-{
-}
-
 
 void Sphere::setTexture(char* filename)
 {
-    Texture = loadDDS(filename);
+    Texture = loadBMP_custom("box.bmp");
 }
 
 void Sphere::drawS(mat4 M)
@@ -55,9 +52,47 @@ void Sphere::drawS(mat4 M)
 }
 
 
+void Sphere::transRight(GLfloat value)
+{
+    if (x < 2.4)
+        x += value;
+}
+
+void Sphere::transLeft(GLfloat value)
+{
+    if (x > -2.4)
+        x -= value;
+}
+
+int yincrement = 0;
+int presentage = 0.2;
+bool down = false;
+
+void Sphere::jump()
+{
+    
+    if(y<= 0 && downball==false){
+        y++;
+    }else if(y > -3)
+    {
+        downball = true;
+        y--;
+    }else
+    {
+        GameSingleton->setJump(false);
+        downball = false;
+    }
+    
+}
+
 void Sphere::writeBuffer()
 {
-    mat4 trans = Translate(0, -3, -1);
-//    mat4 rot = RotateZ(30);
-    drawS(trans * scaleMatrix);
+    mat4 trans = Translate(x, y, GameSingleton->eyeZ-3);
+    //    mat4 rot = RotateZ(30);
+    drawS(trans * 2*scaleMatrix);
+}
+
+vec3 Sphere::getLoc()
+{
+    return vec3(x,y,GameSingleton->eyeZ-3);
 }
